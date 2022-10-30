@@ -1,58 +1,66 @@
-## UBUNTU
+# Ansible Automation on Centos + Ubuntu
+# Install Webserver NGINX + PHP
+# (c) 2022 Hilmi Afifi
+
+###################
+### Host Ubuntu ###
+###################
 - hosts: test_ubuntu
 
+  # Make Variable
   vars:
     ubuntu: ubuntu.thanos.my.id
 
+  # Start Doing Work
   tasks:
-    - name: Update apt cache
+    - name: Update apt Cache
       apt:
         update_cache: yes
 
-    - name: Install NGINX and PHP
+    - name: Install Nginx + PHP
       apt:
         pkg:
         - nginx
         - php8.1-fpm
         - php8.1-common
 
-    - name: start php8.1-fpm
+    - name: Start php8.1-fpm
       service:
         name: php8.1-fpm
         state: started
 
-    - name: Allow all access to tcp port 80
+    - name: Allow All Access to TCP Port 80
       ufw:
         rule: allow
         port: 80
         proto: tcp
 
-    - name: Creates directory /var/www/ubuntu.thanos.my.id
+    - name: Create Directory /var/www/{{ubuntu}}
       file:
-        path: /var/www/{{ ubuntu }}
+        path: /var/www/{{ubuntu}}
         state: directory
         owner: root
         group: root
         mode: 0775
         recurse: yes
 
-    - name: Creates directory sites-available, sites-enabled
+    - name: Create Directory {{item}}
       file:
-        path: /etc/nginx/{{ item }}
+        path: /etc/nginx/{{item}}
         state: directory
         owner: root
         group: root
         mode: 0775
       with_items: ["sites-available", "sites-enabled"]
 
-    - name: Create and Setting Virtual Host
+    - name: Create + Setting Virtual Host
       copy:
-        dest: /etc/nginx/sites-available/{{ ubuntu }}
+        dest: /etc/nginx/sites-available/{{ubuntu}}
         content: |
           server {
             listen 80;
-            server_name {{ ubuntu }};
-            root /var/www/{{ ubuntu }};
+            server_name {{ubuntu}};
+            root /var/www/{{ubuntu}};
             index index.html index.htm index.php;
             location / {
               try_files $uri $uri/ =404;
@@ -66,98 +74,98 @@
             }
           }
 
-    - name: Create symbolic link
+    - name: Create Symbolic Link
       file:
-        src: /etc/nginx/sites-available/{{ ubuntu }}
-        dest: /etc/nginx/sites-enabled/{{ ubuntu }}
+        src: /etc/nginx/sites-available/{{ubuntu}}
+        dest: /etc/nginx/sites-enabled/{{ubuntu}}
         state: link
         force: yes
 
-    - name: Create and Setting Info PHP
+    - name: Create + Setting Info PHP
       copy:
         dest: /var/www/{{ ubuntu }}/index.php
         content: |
           <?php
-
           // Show all information, defaults to INFO_ALL
           phpinfo();
-
           // Show just the module information.
           // phpinfo(8) yields identical results.
           phpinfo(INFO_MODULES);
-
           ?>
 
-    - name: Restart Nginx
+    - name: Restart Nginx Service
       service:
         name: nginx
         state: restarted
 
-## CENTOS
+###################
+### Host Centos ###
+###################
 - hosts: test_centos
 
+  # Make Variable
   vars:
     centos: centos.thanos.my.id
     mysrc: "/etc/nginx/nginx.conf"
     mydst: "/etc/nginx/nginx.conf.bak"
 
+# Start Doing Work
   tasks:
-    - name: Install NGINX and PHP
+    - name: Install Nginx and PHP
       yum:
         pkg:
         - nginx
         - php-fpm
         - php-common
 
-    - name: start php-fpm
+    - name: Start php-fpm
       service:
         name: php-fpm
         state: started
 
-    - name: Creates directory /usr/share/nginx/centos.thanos.my.id
+    - name: Create Directory /usr/share/nginx/{{centos}}
       file:
-        path: /usr/share/nginx/{{ centos }}
+        path: /usr/share/nginx/{{centos}}
         state: directory
         owner: root
         group: root
         mode: 0775
         recurse: yes
 
-    - name: Creates directory sites-available, sites-enabled
+    - name: Create Directory {{item}}
       file:
-        path: /etc/nginx/{{ item }}
+        path: /etc/nginx/{{item}}
         state: directory
         owner: root
         group: root
         mode: 0775
       with_items: ["sites-available", "sites-enabled"]
 
-    ## Backup /etc/nginx/nginx.conf.bak
-    - name: Check if file exists
+    - name: Check if File {{mysrc}} Exists
       ansible.builtin.stat:
-        path: "{{ mysrc }}"
+        path: "{{mysrc}}"
       register: check_file_name
 
-    - name: print debug
+    - name: Print Debug
       ansible.builtin.debug:
         var: check_file_name
 
-    - name: Copy file with new name
+    - name: Backup + Copy File {{mysrc}} to {{mydst}}
       ansible.builtin.copy:
         remote_src: true
-        src: "{{ mysrc }}"
-        dest: "{{ mydst }}"
+        src: "{{mysrc}}"
+        dest: "{{mydst}}"
       when: check_file_name.stat.exists
 
-    - name: Remove old file
+    - name: Remove Old {{mysrc}} File
       ansible.builtin.file:
-        path: "{{ mysrc }}"
+        path: "{{mysrc}}"
         state: absent
       when: check_file_name.stat.exists
 
-    - name: Create new setting /etc/nginx/nginx.conf
+    - name: Create New File {{mysrc}}
       copy:
-        dest: /etc/nginx/nginx.conf
+        dest: {{mysrc}}
         content: |
           user nginx;
           worker_processes auto;
@@ -183,14 +191,14 @@
               include                /etc/nginx/sites-enabled/*.conf;
           }
 
-    - name: Create and Setting Virtual Host
+    - name: Create + Setting Virtual Host
       copy:
-        dest: /etc/nginx/sites-available/{{ centos }}.conf
+        dest: /etc/nginx/sites-available/{{centos}}.conf
         content: |
           server {
             listen 80;
-            server_name {{ centos }};
-            root /usr/share/nginx/{{ centos }};
+            server_name {{centos}};
+            root /usr/share/nginx/{{centos}};
             index index.html index.htm index.php;
             location / {
               try_files $uri $uri/ =404;
@@ -207,29 +215,26 @@
             }
           }
 
-    - name: Create symbolic link
+    - name: Create Symbolic link
       file:
-        src: /etc/nginx/sites-available/{{ centos }}.conf
-        dest: /etc/nginx/sites-enabled/{{ centos }}.conf
+        src: /etc/nginx/sites-available/{{centos}}.conf
+        dest: /etc/nginx/sites-enabled/{{centos}}.conf
         state: link
         force: yes
 
-    - name: Create and Setting Info PHP
+    - name: Create + Setting Info PHP
       copy:
-        dest: /usr/share/nginx/{{ centos }}/index.php
+        dest: /usr/share/nginx/{{centos}}/index.php
         content: |
           <?php
-
           // Show all information, defaults to INFO_ALL
           phpinfo();
-
           // Show just the module information.
           // phpinfo(8) yields identical results.
           phpinfo(INFO_MODULES);
-
           ?>
 
-    - name: Restart Nginx
+    - name: Restart Nginx Service
       service:
         name: nginx
         state: restarted
