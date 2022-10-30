@@ -125,7 +125,7 @@
 
     - name: Create Directory /usr/share/nginx/{{centos}}
       file:
-        path: "/usr/share/nginx/{{centos}}'
+        path: "/usr/share/nginx/{{centos}}"
         state: directory
         owner: root
         group: root
