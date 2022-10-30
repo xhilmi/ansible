@@ -37,7 +37,7 @@
 
     - name: Create Directory /var/www/{{ubuntu}}
       file:
-        path: /var/www/{{ubuntu}}
+        path: "/var/www/{{ubuntu}}"
         state: directory
         owner: root
         group: root
@@ -46,7 +46,7 @@
 
     - name: Create Directory {{item}}
       file:
-        path: /etc/nginx/{{item}}
+        path: "/etc/nginx/{{item}}"
         state: directory
         owner: root
         group: root
@@ -55,7 +55,7 @@
 
     - name: Create + Setting Virtual Host
       copy:
-        dest: /etc/nginx/sites-available/{{ubuntu}}
+        dest: "/etc/nginx/sites-available/{{ubuntu}}"
         content: |
           server {
             listen 80;
@@ -76,14 +76,14 @@
 
     - name: Create Symbolic Link
       file:
-        src: /etc/nginx/sites-available/{{ubuntu}}
-        dest: /etc/nginx/sites-enabled/{{ubuntu}}
+        src: "/etc/nginx/sites-available/{{ubuntu}}"
+        dest: "/etc/nginx/sites-enabled/{{ubuntu}}"
         state: link
         force: yes
 
     - name: Create + Setting Info PHP
       copy:
-        dest: /var/www/{{ ubuntu }}/index.php
+        dest: "/var/www/{{ubuntu}}/index.php"
         content: |
           <?php
           // Show all information, defaults to INFO_ALL
@@ -106,8 +106,8 @@
   # Make Variable
   vars:
     centos: centos.thanos.my.id
-    mysrc: "/etc/nginx/nginx.conf"
-    mydst: "/etc/nginx/nginx.conf.bak"
+    mysrc: /etc/nginx/nginx.conf
+    mydst: /etc/nginx/nginx.conf.bak
 
 # Start Doing Work
   tasks:
@@ -125,7 +125,7 @@
 
     - name: Create Directory /usr/share/nginx/{{centos}}
       file:
-        path: /usr/share/nginx/{{centos}}
+        path: "/usr/share/nginx/{{centos}}'
         state: directory
         owner: root
         group: root
@@ -134,7 +134,7 @@
 
     - name: Create Directory {{item}}
       file:
-        path: /etc/nginx/{{item}}
+        path: "/etc/nginx/{{item}}"
         state: directory
         owner: root
         group: root
@@ -163,9 +163,9 @@
         state: absent
       when: check_file_name.stat.exists
 
-    - name: Create New File {{mysrc}}
+    - name: Create New File "{{mysrc}}"
       copy:
-        dest: {{mysrc}}
+        dest: "{{mysrc}}"
         content: |
           user nginx;
           worker_processes auto;
@@ -193,7 +193,7 @@
 
     - name: Create + Setting Virtual Host
       copy:
-        dest: /etc/nginx/sites-available/{{centos}}.conf
+        dest: "/etc/nginx/sites-available/{{centos}}.conf"
         content: |
           server {
             listen 80;
@@ -217,14 +217,14 @@
 
     - name: Create Symbolic link
       file:
-        src: /etc/nginx/sites-available/{{centos}}.conf
-        dest: /etc/nginx/sites-enabled/{{centos}}.conf
+        src: "/etc/nginx/sites-available/{{centos}}.conf"
+        dest: "/etc/nginx/sites-enabled/{{centos}}.conf"
         state: link
         force: yes
 
     - name: Create + Setting Info PHP
       copy:
-        dest: /usr/share/nginx/{{centos}}/index.php
+        dest: "/usr/share/nginx/{{centos}}/index.php"
         content: |
           <?php
           // Show all information, defaults to INFO_ALL
