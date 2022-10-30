@@ -106,8 +106,7 @@
   # Make Variable
   vars:
     centos: centos.thanos.my.id
-    mysrc: /etc/nginx/nginx.conf
-    mydst: /etc/nginx/nginx.conf.bak
+    nginx: /etc/nginx/nginx.conf
 
 # Start Doing Work
   tasks:
@@ -141,31 +140,31 @@
         mode: 0775
       with_items: ["sites-available", "sites-enabled"]
 
-    - name: Check if File {{mysrc}} Exists
+    - name: Check if File {{nginx}} Exists
       ansible.builtin.stat:
-        path: "{{mysrc}}"
+        path: "{{nginx}}"
       register: check_file_name
 
     - name: Print Debug
       ansible.builtin.debug:
         var: check_file_name
 
-    - name: Backup + Copy File {{mysrc}} to {{mydst}}
+    - name: Backup + Copy File {{nginx}} to {{nginx}}.bak
       ansible.builtin.copy:
         remote_src: true
-        src: "{{mysrc}}"
-        dest: "{{mydst}}"
+        src: "{{nginx}}"
+        dest: "{{nginx}}.bak"
       when: check_file_name.stat.exists
 
-    - name: Remove Old {{mysrc}} File
+    - name: Remove Old {{nginx}} File
       ansible.builtin.file:
-        path: "{{mysrc}}"
+        path: "{{nginx}}"
         state: absent
       when: check_file_name.stat.exists
 
-    - name: Create New File "{{mysrc}}"
+    - name: Create New File "{{nginx}}"
       copy:
-        dest: "{{mysrc}}"
+        dest: "{{nginx}}"
         content: |
           user nginx;
           worker_processes auto;
