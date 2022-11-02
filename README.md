@@ -1,4 +1,4 @@
 # ansible-automate
-# ansible-playbook
-# ansible-galaxy
-# ansible-inventory
+ansible-playbook
+ansible-galaxy
+ansible-inventory
