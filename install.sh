@@ -1,10 +1,14 @@
-#!/bin/bash
-===============================================
-==================== ANSIBLE ====================
-===============================================
+# !/bin/bash
+# ===============================================
+# ==================== ANSIBLE ====================
+# ===============================================
+
 sudo apt update -y;
 sudo apt install software-properties-common -yl
+
 sudo add-apt-repository --yes --update ppa:ansible/ansible;
+
+sudo apt update -y;
 sudo apt install ansible -y;
 
 # ssh-keygen -t rsa
