@@ -1,0 +1,68 @@
+# Ansible Automation on Centos + Ubuntu
+# Install and Do Something with Fishrc
+# (c) 2022 Hilmi Afifi
+
+###################
+### Host Ubuntu ###
+###################
+- hosts: ubuntu
+
+  # Make Variable
+  vars:
+
+  # Start Doing Work
+  tasks:
+    - name: apt update
+      apt:
+        update_cache: yes
+
+    - name: install fish, nano, wget, git
+      apt:
+        pkg:
+        - net-tools
+        - fish
+        - nano
+        - wget
+        - git
+
+    - name: change shell to fish
+      shell: chsh -s $(which fish)
+
+###################
+### Host Centos ###
+###################
+- hosts: centos
+
+  # Make Variable
+  vars:
+
+  # Start Doing Work
+  tasks:
+    - name: install epel and dnf
+      yum:
+        name:
+        - epel-release
+        - dnf-plugins-core
+
+    - name: wget repository
+      ansible.builtin.get_url:
+        url: "http://download.opensuse.org/repositories/shells:fish:release:2/CentOS_7/shells:fish:release:2.repo"
+        dest: /etc/yum.repos.d/
+        mode: '0644'
+
+    - name: yum update
+      yum:
+        update_cache: yes
+
+    - name: install fish, nano, wget, git
+      yum:
+        name:
+        - net-tools
+        - yum-utils
+        - fish
+        - nano
+        - wget
+        - git
+
+    - name: change shell to fish
+      shell: usermod -s $(which fish) root
