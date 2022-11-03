@@ -23,6 +23,11 @@
         - nginx
         - php8.1-fpm
         - php8.1-common
+        - net-tools
+        - nano
+        - wget
+        - git
+        - tree
 
     - name: Start php8.1-fpm
       service:
@@ -115,6 +120,11 @@
         - nginx
         - php-fpm
         - php-common
+        - net-tools
+        - nano
+        - wget
+        - git
+        - tree
 
     - name: Start php-fpm
       service:
