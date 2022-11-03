@@ -16,7 +16,7 @@
       apt:
         update_cache: yes
 
-    - name: install fish, nano, wget, git
+    - name: install net-tools, fish, nano, wget, git, tree
       apt:
         pkg:
         - net-tools
@@ -55,7 +55,7 @@
       yum:
         update_cache: yes
 
-    - name: install fish, nano, wget, git
+    - name: install net-tools, yum-utils, fish, nano, wget, git, tree
       yum:
         name:
         - net-tools
