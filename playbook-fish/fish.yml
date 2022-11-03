@@ -24,6 +24,7 @@
         - nano
         - wget
         - git
+        - tree
 
     - name: change shell to fish
       shell: chsh -s $(which fish)
@@ -63,6 +64,7 @@
         - nano
         - wget
         - git
+        - tree
 
     - name: change shell to fish
       shell: usermod -s $(which fish) root
