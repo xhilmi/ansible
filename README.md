@@ -1,5 +1,3 @@
-# automate
-
 # ansible
 - ansible-playbook
 - ansible-galaxy
