@@ -1,4 +1,12 @@
-# ansible-automate
-ansible-playbook
-ansible-galaxy
-ansible-inventory
+# automate
+
+# ansible
+- ansible-playbook
+- ansible-galaxy
+- ansible-inventory
+
+# jenkins
+
+# docker
+
+# kubernetes
