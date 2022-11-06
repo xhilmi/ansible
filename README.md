@@ -1,8 +1,13 @@
 # ansible
-- ansible-playbook
-- ansible-galaxy
-- ansible-inventory
-  - oke
+- playbook-fish
+  - fish.yml
+- playbook-nginx-php
+  - nginx-php.yml
+    - oke
+- README
+- fish.sh
+- install.sh
+
 # jenkins
 
 # docker
