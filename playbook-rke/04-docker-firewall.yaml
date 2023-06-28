@@ -4,14 +4,10 @@
   gather_facts: false
 
   tasks:
-    - name: Download get-docker.sh
-      command: curl -fsSL get.docker.com -o get-docker.sh
-
-    - name: Install Docker
-      shell: sudo sh get-docker.sh
-
     - name: Install Docker using Rancher
       shell: curl https://releases.rancher.com/install-docker/23.0.6.sh | sudo bash -
+      args:
+        creates: /usr/bin/docker
 
     - name: Enable and start Docker service
       service:
