@@ -61,10 +61,14 @@
         - 4789
         - "30000:32767"
 
-    - name: Enable and reload UFW
-      command: |
-        sudo ufw enable
-        sudo ufw reload
+    - name: Enable UFW
+      ufw:
+        state: enabled 
+
+    - name: Reload UFW
+      ufw:
+        state: reloaded 
+
 
     - name: Update SSH configuration for TCP forwarding
       lineinfile:
