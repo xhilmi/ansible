@@ -4,8 +4,6 @@
 ```
 bash <(curl -s https://raw.githubusercontent.com/xhilmi/ansible/master/install.sh)
 ```
-![image](https://github.com/xhilmi/ansible/assets/38133643/26cc80b6-4ef3-4b4a-89c9-a1c668724060)
-
 
 2. Setup file `ansible.cfg` and `hosts`
 - save into $HOME for `user`
@@ -40,6 +38,7 @@ ssh-copy-id user@34.3.3.3
 ```
 
 4. Test ansible connection
+![image](https://github.com/xhilmi/ansible/assets/38133643/66cb8abb-49c1-46f8-bde6-7ca7ca67b599)
 ```
 ansible -i hosts all -m ping
 ansible -i hosts master-node -m ping
