@@ -1,6 +1,6 @@
 ---
 - name: Create rke user with passwordless sudo
-  hosts: all
+  hosts: all # <REPLACE WITH YOUR SPECIFY ANSIBLE HOST>
   remote_user: root
   tasks:
     - name: Add RKE admin user

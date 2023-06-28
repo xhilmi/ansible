@@ -1,6 +1,6 @@
 ---
 - name: Update linux file system
-  hosts: all
+  hosts: all # <REPLACE WITH YOUR SPECIFY ANSIBLE HOST>
   remote_user: root
   tasks:
     - name: Updating all instance in progress

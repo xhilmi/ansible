@@ -1,6 +1,6 @@
 ---
 - name: Load RKE kernel modules
-  hosts: all
+  hosts: all # <REPLACE WITH YOUR SPECIFY ANSIBLE HOST>
   remote_user: root
   vars:
     kernel_modules:

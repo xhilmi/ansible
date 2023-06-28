@@ -1,6 +1,6 @@
 ---
 - name: Disable swap and load kernel modules
-  hosts: all
+  hosts: all # <REPLACE WITH YOUR SPECIFY ANSIBLE HOST>
   remote_user: root
   tasks:
     - name: Disable SWAP since kubernetes can't work with swap enabled (1/2)

@@ -1,5 +1,5 @@
 - name: Docker + Firewall
-  hosts: master_node
+  hosts: master_node # <REPLACE WITH YOUR SPECIFY ANSIBLE HOST>
   become: true
   gather_facts: false
 
