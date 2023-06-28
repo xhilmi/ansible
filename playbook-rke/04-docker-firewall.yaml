@@ -37,17 +37,13 @@
         - 80
         - 443
         - 179
+        - 2376
+        - "2379:2380"
         - 5473
         - 6443
         - 8472
-        - 2376
-        - 8472
-        - "2379:2380"
         - 9099
-        - 10250
-        - 10251
-        - 10252
-        - 10254
+        - "10250:10254"
         - "30000:32767"
 
     - name: Allow specified UDP ports in UFW
@@ -56,9 +52,9 @@
         port: '{{ item }}'
         proto: udp
       loop:
+        - 4789
         - 8285
         - 8472
-        - 4789
         - "30000:32767"
 
     - name: Enable UFW
@@ -68,7 +64,6 @@
     - name: Reload UFW
       ufw:
         state: reloaded 
-
 
     - name: Update SSH configuration for TCP forwarding
       lineinfile:
@@ -81,13 +76,3 @@
       service:
         name: sshd
         state: restarted
-
-    - name: Check SSH service status
-      service_facts:
-        filters:
-          name: sshd
-      register: sshd_status
-
-    - name: Display SSH service status
-      debug:
-        var: sshd_status
