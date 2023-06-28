@@ -12,19 +12,22 @@ bash <(curl -s https://raw.githubusercontent.com/xhilmi/ansible/master/install.s
 ansible-config init --disabled -t all > ansible.cfg
 ```
 ```
-[master-node]
+[master_node]
 38.1.1.1
+
+[worker_node_a]
 38.2.2.2
+
+[worker_node_b]
 38.3.3.3
 
-[worker-node]
-34.1.1.1
-34.2.2.2
-34.3.3.3
-
 [kubernetes:children]
-master-node
-worker-node
+master_node
+worker_node
+
+[worker_node:children]
+worker_node_a
+worker_node_b
 ```
 
 3. On your local machine run ssh-copy-id
@@ -32,9 +35,6 @@ worker-node
 ssh-copy-id user@38.1.1.1
 ssh-copy-id user@38.2.2.2
 ssh-copy-id user@38.3.3.3
-ssh-copy-id user@34.1.1.1
-ssh-copy-id user@34.2.2.2
-ssh-copy-id user@34.3.3.3
 ```
 
 4. Test ansible connection
