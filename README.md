@@ -4,6 +4,8 @@
 ```
 bash <(curl -s https://raw.githubusercontent.com/xhilmi/ansible/master/install.sh)
 ```
+![image](https://github.com/xhilmi/ansible/assets/38133643/26cc80b6-4ef3-4b4a-89c9-a1c668724060)
+
 
 2. Setup file `ansible.cfg` and `hosts`
 - save into $HOME for `user`
