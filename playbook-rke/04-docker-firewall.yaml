@@ -72,7 +72,7 @@
         regexp: "^.*AllowTcpForwarding .*"
         state: present
 
-    - name: Restart SSH service
+    - name: Reload SSH service
       service:
         name: sshd
-        state: restarted
+        state: reloaded
