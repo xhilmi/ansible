@@ -1,0 +1,8 @@
+---
+- name: Update linux file system
+  hosts: all
+  remote_user: root
+  tasks:
+    - name: Updating all instance in progress
+      apt:
+        update_cache: yes
