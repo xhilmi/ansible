@@ -1,5 +1,5 @@
 - name: Docker + Firewall
-  hosts: master-node
+  hosts: master_node
   become: true
   gather_facts: false
 
@@ -16,7 +16,7 @@
         state: started
 
     - name: Check Docker version
-      shell: sudo docker version --format '{{.Server.Version}}'
+      shell: sudo docker version
 
     - name: Add user to the docker group
       user:
