@@ -30,7 +30,7 @@
     - name: Allow specified TCP ports in UFW
       ufw:
         rule: allow
-        src: '{{ item }}'
+        port: '{{ item }}'
         proto: tcp
       loop:
         - 22
@@ -53,7 +53,7 @@
     - name: Allow specified UDP ports in UFW
       ufw:
         rule: allow
-        src: '{{ item }}'
+        port: '{{ item }}'
         proto: udp
       loop:
         - 8285
