@@ -1,5 +1,5 @@
 - name: Docker + Firewall
-  hosts: master_node # <REPLACE WITH YOUR SPECIFY ANSIBLE HOST>
+  hosts: all # <REPLACE WITH YOUR SPECIFY ANSIBLE HOST>
   become: true
   gather_facts: false
 
@@ -26,10 +26,13 @@
 
     - name: Check user details
       command: id rke
-
+        
     - name: Allow specified TCP ports in UFW
-      command: sudo ufw allow {{ item }}/tcp
-      with_items:
+      ufw:
+        rule: allow
+        src: '{{ item }}'
+        proto: tcp
+      loop:
         - 22
         - 80
         - 443
@@ -39,28 +42,26 @@
         - 8472
         - 2376
         - 8472
-        - "2379-2380"
+        - "2379:2380"
         - 9099
         - 10250
         - 10251
         - 10252
         - 10254
-        - "30000-32767"
-
-    - name: Enable and reload UFW
-      command: |
-        sudo ufw --force enable
-        sudo ufw reload
+        - "30000:32767"
 
     - name: Allow specified UDP ports in UFW
-      command: sudo ufw allow {{ item }}/udp
-      with_items:
+      ufw:
+        rule: allow
+        src: '{{ item }}'
+        proto: udp
+      loop:
         - 8285
         - 8472
         - 4789
-        - "30000-32767"
+        - "30000:32767"
 
-    - name: Enable and reload UFW (UDP)
+    - name: Enable and reload UFW
       command: |
         sudo ufw --force enable
         sudo ufw reload
