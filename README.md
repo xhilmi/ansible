@@ -6,8 +6,8 @@ bash <(curl -s https://raw.githubusercontent.com/xhilmi/ansible/master/install.s
 ```
 
 2. Setup file `ansible.cfg` and `hosts`
-### save into $HOME for `user`
-### save into /etc/ansible/ for `root`
+- save into $HOME for `user`
+- save into /etc/ansible/ for `root`
 ```
 ansible-config init --disabled -t all > ansible.cfg
 ```
