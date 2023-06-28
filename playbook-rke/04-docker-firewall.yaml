@@ -1,0 +1,92 @@
+- name: Docker + Firewall
+  hosts: master-node
+  become: true
+  gather_facts: false
+
+  tasks:
+    - name: Download get-docker.sh
+      command: curl -fsSL get.docker.com -o get-docker.sh
+
+    - name: Install Docker
+      shell: sudo sh get-docker.sh
+
+    - name: Install Docker using Rancher
+      shell: curl https://releases.rancher.com/install-docker/23.0.6.sh | sudo bash -
+
+    - name: Enable and start Docker service
+      service:
+        name: docker
+        enabled: true
+        state: started
+
+    - name: Check Docker version
+      shell: sudo docker version --format '{{.Server.Version}}'
+
+    - name: Add user to the docker group
+      user:
+        name: rke
+        groups: docker
+        append: true
+
+    - name: Check user details
+      command: id rke
+
+    - name: Allow specified TCP ports in UFW
+      command: sudo ufw allow {{ item }}/tcp
+      with_items:
+        - 22
+        - 80
+        - 443
+        - 179
+        - 5473
+        - 6443
+        - 8472
+        - 2376
+        - 8472
+        - "2379-2380"
+        - 9099
+        - 10250
+        - 10251
+        - 10252
+        - 10254
+        - "30000-32767"
+
+    - name: Enable and reload UFW
+      command: |
+        sudo ufw --force enable
+        sudo ufw reload
+
+    - name: Allow specified UDP ports in UFW
+      command: sudo ufw allow {{ item }}/udp
+      with_items:
+        - 8285
+        - 8472
+        - 4789
+        - "30000-32767"
+
+    - name: Enable and reload UFW (UDP)
+      command: |
+        sudo ufw --force enable
+        sudo ufw reload
+
+    - name: Update SSH configuration for TCP forwarding
+      lineinfile:
+        path: /etc/ssh/sshd_config
+        line: "AllowTcpForwarding yes"
+        regexp: "^.*AllowTcpForwarding .*"
+        state: present
+
+    - name: Restart SSH service
+      service:
+        name: sshd
+        state: restarted
+
+    - name: Check SSH service status
+      service_facts:
+        filters:
+          name: sshd
+      register: sshd_status
+
+    - name: Display SSH service status
+      debug:
+        var: sshd_status
