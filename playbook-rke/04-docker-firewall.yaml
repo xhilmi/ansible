@@ -63,7 +63,7 @@
 
     - name: Enable and reload UFW
       command: |
-        sudo ufw --force enable
+        sudo ufw enable
         sudo ufw reload
 
     - name: Update SSH configuration for TCP forwarding
