@@ -1,0 +1,199 @@
+---
+- name: Docker and Golang Setup
+  hosts: all
+  become: true
+  tasks:
+    - name: Check if Docker packages are installed
+      block:
+        - name: Check if containerd.io is installed
+          shell: dpkg -s containerd.io
+          register: containerd_pkg_status
+          changed_when: false
+          failed_when: false
+
+        - name: Check if docker-ce is installed
+          shell: dpkg -s docker-ce
+          register: docker_ce_pkg_status
+          changed_when: false
+          failed_when: false
+
+        - name: Check if docker-ce-cli is installed
+          shell: dpkg -s docker-ce-cli
+          register: docker_ce_cli_pkg_status
+          changed_when: false
+          failed_when: false
+
+      rescue:
+        - name: Remove existing Docker packages
+          apt:
+            name:
+              - containerd.io
+              - docker-ce
+              - docker-ce-cli
+            state: absent
+          tags: docker
+
+    - name: Create Docker directory
+      file:
+        path: /etc/docker
+        state: directory
+        mode: '0755'
+      tags: docker
+
+    - name: Configure Docker daemon.json
+      lineinfile:
+        dest: /etc/docker/daemon.json
+        line: |
+          {
+            "exec-opts": ["native.cgroupdriver=systemd"],
+            "log-driver": "json-file",
+            "log-opts": {
+              "max-size": "100m"
+            },
+            "storage-driver": "overlay2"
+          }
+      tags: docker
+
+    # Rest of the tasks...
+    - name: Apply Docker daemon changes
+      command: sysctl --system
+      tags: docker
+
+    - name: Update apt cache
+      apt:
+        update_cache: yes
+      tags: docker
+
+    - name: Add Docker GPG key
+      apt_key:
+        url: https://download.docker.com/linux/ubuntu/gpg
+        state: present
+      tags: docker
+
+    - name: Add Docker repository
+      apt_repository:
+        repo: "deb [arch=amd64] https://download.docker.com/linux/ubuntu {{ ansible_lsb.codename }} stable"
+        state: present
+      tags: docker
+
+    - name: Install Docker packages
+      apt:
+        name:
+          - containerd.io
+          - docker-ce
+          - docker-ce-cli
+        state: present
+      tags: docker
+
+    - name: Create Docker systemd directory
+      file:
+        path: /etc/systemd/system/docker.service.d
+        state: directory
+      tags: docker
+
+    - name: Reload systemd daemon
+      command: systemctl daemon-reload
+      tags: docker
+
+    - name: Restart Docker service
+      service:
+        name: docker
+        state: restarted
+        enabled: yes
+      tags: docker
+
+    - name: Install Golang
+      command: |
+        wget https://storage.googleapis.com/golang/getgo/installer_linux
+        chmod +x ./installer_linux
+        ./installer_linux
+      tags: golang
+
+    - name: Set Golang environment variables
+      shell: |
+        source ~/.bash_profile
+        go version
+      args:
+        executable: /bin/bash
+      tags: golang
+
+    - name: Clone cri-dockerd repository
+      git:
+        repo: https://github.com/Mirantis/cri-dockerd.git
+        dest: cri-dockerd
+      tags: cri-docker
+
+    - name: Create cri-dockerd bin directory
+      file:
+        path: cri-dockerd/bin
+        state: directory
+        mode: '0777'
+      tags: cri-docker
+
+    - name: Build cri-dockerd
+      shell: go build -x -o bin/cri-dockerd
+      args:
+        chdir: cri-dockerd
+      tags: cri-docker
+
+    - name: Install cri-dockerd
+      copy:
+        src: cri-dockerd/bin/cri-dockerd
+        dest: /usr/local/bin/cri-dockerd
+        mode: '0755'
+      tags: cri-docker
+
+    - name: Copy cri-dockerd systemd files
+      copy:
+        src: packaging/systemd/*
+        dest: /etc/systemd/system
+      tags: cri-docker
+
+    - name: Update cri-dockerd systemd service
+      lineinfile:
+        dest: /etc/systemd/system/cri-docker.service
+        line: 'ExecStart=/usr/local/bin/cri-dockerd'
+        regexp: '^ExecStart='
+      tags: cri-docker
+
+    - name: Reload systemd daemon
+      command: systemctl daemon-reload
+      tags: cri-docker
+
+    - name: Enable cri-dockerd service
+      service:
+        name: cri-docker.service
+        enabled: yes
+        state: started
+      tags: cri-docker
+
+    - name: Enable cri-dockerd socket
+      service:
+        name: cri-docker.socket
+        enabled: yes
+        state: started
+      tags: cri-docker
+
+    - name: Check br_netfilter kernel module
+      shell: lsmod | grep br_netfilter
+      tags: cri-docker
+
+    - name: Enable kubelet service
+      service:
+        name: kubelet
+        enabled: yes
+        state: started
+      tags: kubelet
+
+    - name: Disable UFW
+      service:
+        name: ufw
+        enabled: no
+        state: stopped
+      tags: firewall
+
+    - name: Stop UFW service
+      service:
+        name: ufw
+        state: stopped
+      tags: firewall
