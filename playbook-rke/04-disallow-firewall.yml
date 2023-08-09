@@ -1,0 +1,9 @@
+- name: Firewall
+  hosts: all # <REPLACE WITH YOUR SPECIFY ANSIBLE HOST>
+  become: true
+  gather_facts: false
+
+  tasks:
+    - name: Enable UFW
+      ufw:
+        state: disabled 

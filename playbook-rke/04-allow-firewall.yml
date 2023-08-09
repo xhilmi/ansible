@@ -1,0 +1,58 @@
+- name: Firewall
+  hosts: all # <REPLACE WITH YOUR SPECIFY ANSIBLE HOST>
+  become: true
+  gather_facts: false
+
+  tasks:
+    - name: Allow specified TCP ports in UFW
+      ufw:
+        rule: allow
+        port: '{{ item }}'
+        proto: tcp
+      loop:
+        - 22
+        - 80
+        - 443
+        - 179
+        - 2376
+        - "2379:2380"
+        - 5473
+        - 6443
+        - 8472
+        - 9099
+        - 10248
+        - "10250:10254"
+        - "30000:32767"
+
+    - name: Allow specified UDP ports in UFW
+      ufw:
+        rule: allow
+        port: '{{ item }}'
+        proto: udp
+      loop:
+        - 4789
+        - 8285
+        - 8472
+        - 10248
+        - "10250:10254"
+        - "30000:32767"
+
+    - name: Enable UFW
+      ufw:
+        state: enabled 
+
+    - name: Reload UFW
+      ufw:
+        state: reloaded 
+
+    - name: Update SSH configuration for TCP forwarding
+      lineinfile:
+        path: /etc/ssh/sshd_config
+        line: "AllowTcpForwarding yes"
+        regexp: "^.*AllowTcpForwarding .*"
+        state: present
+
+    - name: Reload SSH service
+      service:
+        name: sshd
+        state: reloaded

@@ -1,6 +1,6 @@
 ---
 - name: Docker and Golang Setup
-  hosts: all
+  hosts: master_node
   become: true
   tasks:
     - name: Check if Docker packages are installed
@@ -40,10 +40,9 @@
         mode: '0755'
       tags: docker
 
-    - name: Configure Docker daemon.json
-      lineinfile:
-        dest: /etc/docker/daemon.json
-        line: |
+    - name: Create Docker daemon.json
+      copy:
+        content: |
           {
             "exec-opts": ["native.cgroupdriver=systemd"],
             "log-driver": "json-file",
@@ -52,6 +51,7 @@
             },
             "storage-driver": "overlay2"
           }
+        dest: /etc/docker/daemon.json
       tags: docker
 
     # Rest of the tasks...
@@ -72,7 +72,7 @@
 
     - name: Add Docker repository
       apt_repository:
-        repo: "deb [arch=amd64] https://download.docker.com/linux/ubuntu {{ ansible_lsb.codename }} stable"
+        repo: "deb [arch=amd64] https://download.docker.com/linux/ubuntu $(lsb_release -cs) stable"
         state: present
       tags: docker
 

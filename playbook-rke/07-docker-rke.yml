@@ -1,0 +1,38 @@
+# sudo rm /etc/apt/sources.list.d/docker.list
+# sudo rm /etc/apt/keyrings/docker.gpg
+
+---
+- hosts: all
+  become: true
+  tasks:
+    - name: Download 20.10.sh installer
+      get_url: 
+        url: https://releases.rancher.com/install-docker/20.10.sh
+        dest: /tmp/
+        mode: 0755
+        
+    - name: Execute the 20.10.sh
+      shell: /tmp/20.10.sh
+      # args:
+      #   chdir: /tmp/
+
+    - name: Add user to the docker group
+      user:
+        name: rke
+        groups: docker
+        append: true
+
+    - name: Check user details
+      command: id rke
+
+    - name: Configure net.bridge.bridge-nf-call-iptables
+      lineinfile:
+        dest: /etc/sysctl.conf
+        line: "net.bridge.bridge-nf-call-iptables=1"
+        state: present
+        create: yes
+        insertafter: EOF
+        backup: yes
+
+    - name: Reload sysctl settings
+      command: sysctl --system
